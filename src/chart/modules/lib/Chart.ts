@@ -1,10 +1,17 @@
 import { init, ZRenderType } from "zrender";
-import { Layout, LayoutPosition } from "./Layout";
+import { Layout, LayoutPosition } from "../layout/Layout";
 import { Element } from "./Element";
 export interface ChartOption {
   dpr?: number;
   render?: "svg" | "canvas";
+  /** 图表布局 */
   layout?: Layout;
+  /** 长按多久捕获鼠标事件 */
+  catchMouseAfter?: number;
+  /** 松开多久捕获鼠标抬起事件 */
+  hideMouseAfter?: number;
+  /** 是否启用图表短按事件 */
+  openshortMouseAction?: boolean;
 }
 export type DataType =
   | [string, number]
