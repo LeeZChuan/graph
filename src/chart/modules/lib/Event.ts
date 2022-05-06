@@ -1,3 +1,5 @@
+//over
+
 import { ElementEvent } from "zrender";
 import { Chart, ChartOption } from "./Chart";
 
@@ -142,8 +144,8 @@ export default class Event {
     //调用组件的up方法
     private onMouseup() {
         this.chart.elements.forEach(e => {
-            if (e.onMouseup) {
-                e.onMouseup();
+            if (e.onCancelMousePointer) {
+                e.onCancelMousePointer();
             }
         });
     }

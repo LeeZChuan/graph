@@ -75,8 +75,6 @@ export function getExpandSplit(min: number, max: number, splitCount: number, exp
     for (let i = 1; i <= splitCount; i++) {
       split.push(Number(min + step * (i - 1)));
     }
-
-    return split;
   }
 
   return split;
@@ -97,7 +95,6 @@ export function getSplitValue(min: number, max: number, count: number) {
 
   const step = tick((max - min) / (count - 1));
   const res: number[] = [];
-
   let value = Math.floor(min / step) * step;
   while (value < max) {
     res.push(value);
@@ -110,4 +107,14 @@ export function getSplitValue(min: number, max: number, count: number) {
 export function tick(a: number) {
   const step = Math.pow(10, Math.floor(Math.log10(a)));
   return Math.ceil(a / step) * step;
+}
+
+// 随机生成颜色
+export function getRandomColor() {
+  let res = '#';
+  for (let i = 0; i < 3; i++) {
+    res += Math.floor(Math.random() * 256).toString(16);
+  }
+
+  return res;
 }

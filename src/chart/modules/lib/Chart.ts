@@ -1,3 +1,4 @@
+// over
 import { Group, init, ZRenderType, Rect as ZRRect } from "zrender";
 import Eventful from "zrender/lib/core/Eventful";
 import { Layout, LayoutPosition } from "../layout/Layout";
@@ -153,8 +154,12 @@ export class Chart extends Eventful<{ ready: () => void }> {
             fill: getRandomColor(),
             opacity: 0.5
           }
-        }))
+        }));
       }
     }
+    this.zr.add(group);
+    setTimeout(()=>{
+      this.zr.remove(group);
+    },delay);
   }
 }
