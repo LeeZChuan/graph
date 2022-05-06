@@ -1,6 +1,8 @@
 import { init, ZRenderType } from "zrender";
+import Eventful from "zrender/lib/core/Eventful";
 import { Layout, LayoutPosition } from "../layout/Layout";
 import { Element } from "./Element";
+import Event from './Event';
 export interface ChartOption {
   dpr?: number;
   render?: "svg" | "canvas";
@@ -26,18 +28,24 @@ export type Rect = {
   width: number;
   height: number;
 };
-export class Chart {
-  grid: { xs: number[]; ys: number[] } = { xs: [0], ys: [0] };
+export class Chart extends Eventful<{ ready: () => void }> {
   constructor(dom: HTMLElement, option: ChartOption = {}) {
     this.option = option;
     this.zr = init(dom, {
       devicePixelRatio: this.dpr,
       renderer: this.render,
     });
+    this.event = new Event(this, option);
   }
+  // 记录网格每一行每一列的横坐标与纵坐标
+  grid: { xs: number[]; ys: number[] } = { xs: [0], ys: [0] };
+  // zrender画布实例
   zr: ZRenderType;
+  // 图表配置项
   option: ChartOption;
+  // 图表组件集合
   elements = new Map<string, Element>();
+  event: Event;
   get dpr() {
     return this.option.dpr || 2;
   }
