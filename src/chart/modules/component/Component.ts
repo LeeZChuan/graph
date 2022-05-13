@@ -1,10 +1,15 @@
 //over
+
 // 可视化组件基础元素的基础类型属性定义
 
+import { Group } from "zrender";
 import { isArray, merge } from "zrender/lib/core/util";
 import { LayoutPosition } from "../layout/Layout";
 import { Chart } from "../lib/Chart";
 import { ModelOption } from "../util/types";
+import ComponentAction from "./ComponentAction";
+import ComponentMobel from './ComponentModel';
+import ComponentView from './ComponentView';
 
 
 
@@ -12,9 +17,9 @@ export abstract class Component {
     public name: string;
     protected _model: ComponentMobel;
     protected _view: ComponentView;
-    protected _action;
+    protected _action: ComponentAction;
     //所属图表
-    chart: Chart | undefined;
+    chart: Chart;
     //组件位置，行号列号
     position: LayoutPosition | undefined;
     //鼠标按下的执行方法
@@ -34,6 +39,7 @@ export abstract class Component {
     }
 
     //get  set回调
+    // todo:使用帧渲染去控制绘制
     setProxy() {
         this._model.option = new Proxy(this._model.option, {
             get: (target, key: string) => target[key],
