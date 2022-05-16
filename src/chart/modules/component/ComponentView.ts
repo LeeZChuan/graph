@@ -4,8 +4,7 @@ import { Chart } from "../lib/Chart";
 import ComponentModel from './ComponentModel';
 import { View } from './View';
 
-
-
+/* 组件view层面 */
 
 abstract class ComponentView extends View {
     readonly group: Group;
