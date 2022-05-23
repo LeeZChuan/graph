@@ -17,9 +17,10 @@ class ZoomBarView extends ComponentView {
     mousePosition: [number, number] | undefined;
     data: number[] = [];
     background: Rect;
-    mode: string;
+    mode: 'left' | 'right' | 'center' = 'center';
     left: number;
     right: number;
+    debounce: Function | undefined;
 
     constructor(model: ComponentMobel) {
         super(model);
@@ -103,7 +104,7 @@ class ZoomBarView extends ComponentView {
             });
             this.background.attr({
                 shape: {
-                    widht: height,
+                    width: height,
                     r: 2.5
                 }
             });
@@ -156,7 +157,7 @@ class ZoomBarView extends ComponentView {
         if (option.datazoom) {
             option.datazoom.lock = true;
         }
-        this.mousePosition = [e?.offsetX, e?.offsetY];
+        this.mousePosition = [e.offsetX, e.offsetY];
 
         // 判定事件目标，并绑定相应的处理模式
         switch (e?.target) {
@@ -195,15 +196,15 @@ class ZoomBarView extends ComponentView {
             }
 
             // mx:鼠标按压位置与zoombar组件的相对x偏移的距离
-            let mx = e?.offsetX - this.group.x;
+            let mx = e.offsetX - this.group.x;
             if (this.mode === 'center') {
-                const dx = e?.offsetX - this.mousePosition[0];
+                const dx = e.offsetX - this.mousePosition[0];
                 if (left + dx < 0 || right + dx > this.zoomBarRectWidth) {
                     return;
                 }
                 this.left = (left + dx) / this.zoomBarRectWidth;
                 this.right = (right + dx) / this.zoomBarRectWidth;
-                this.mousePosition = [e?.offsetX, e?.offsetY];
+                this.mousePosition = [e.offsetX, e.offsetY];
             } else {
                 if (mx > right && mx <= this.zoomBarRectWidth) {
                     this.mode = 'right';
@@ -232,7 +233,6 @@ class ZoomBarView extends ComponentView {
             this.onChange();
         }
     }
-
     zoomBarBuriedpoint() {
         // 这是拖动条埋点
     }

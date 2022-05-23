@@ -2,6 +2,7 @@ import ComponentAction from "../ComponentAction";
 import ComponentMobel from "../ComponentModel";
 import ComponentView from "../ComponentView";
 import ZoomBarModel from "./ZoomBarModel";
+import ZoomBarView from "./ZoomBarView";
 
 
 
