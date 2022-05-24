@@ -115,6 +115,31 @@ export function getRandomColor() {
   for (let i = 0; i < 3; i++) {
     res += Math.floor(Math.random() * 256).toString(16);
   }
-
   return res;
+}
+
+// 将归一化的范围进行切割，并且切割的数字为count的大小
+export function splitOne(count: number, desc = false) {
+  const step = 1 / (count - 1);
+  const res: number[] = [];
+  if (desc) {
+    for (let i = count - 1; i > -1; i--) {
+      res.push(i * step);
+    }
+  } else {
+    for (let i = 0; i < count; i++) {
+      res.push(i * step);
+    }
+  }
+  return res;
+}
+
+// 处理轴数据，扩展数据包含0轴
+export function getExpandCoverZero(maxVal: number, minVal: number, count: number, prevStep: number | undefined = undefined): Array<number> {
+  const minV = minVal === null ? 0 : minVal;
+  const maxV = maxVal === null ? 0 : maxVal;
+  let min = Math.min(minV, maxV);
+  let max = Math.max(minV, maxV);
+  min = min > 0 ? 0 : min;
+  max = max < 0 ? 0 : max;
 }
