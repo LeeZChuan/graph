@@ -1,5 +1,6 @@
 import { LinearScaler } from "@/modules/scaler/LinearScaler";
-import { getExpandRange, getRange, splitOne } from "../util/math";
+import { getExpandCoverZero, getExpandRange, getRange, getTwoAxisCoverZero, splitOne } from "../util/math";
+import { plus, strip, times } from "../util/number-precision";
 import { SCALER } from "../util/value";
 
 
@@ -210,10 +211,26 @@ export class DataAdapter {
         }
     }
 
+    /**
+     * 获取左、右的分割值
+     * @param rely 左轴还是右侧轴
+     * @returns 
+     */
+    getYvalues(rely: 'left' | 'right') {
+        const re: number[] = [];
+        this.splits.forEach((item, index) => {
+            re.push(this.split(index, rely));
+        });
+        return re;
+    }
 
-    // 获取某个值在左轴右轴的index（从上倒下）
-    // 要查找的值：value
-    // 序号：rely
+
+    /**
+     * 获取某个值在左轴右轴的index（从上倒下）
+     * @param value 要查找的值
+     * @param rely 序号
+     * @returns 
+     */
     getYvalueIndex(value: number, rely: 'left' | 'right') {
         return this.getYvalues(rely).findIndex(item => item === value);
     }
@@ -233,7 +250,7 @@ export class DataAdapter {
                 // TODO:使用键值对，将含有sum元素的键值对剔除
                 if (!this.visible.has(key)) return;
                 if (this.getyRangeIndex(key, yRangeKeys) !== -1) return;
-                for (let i = min, k = 0, i<value.length && i <= max; i++, k++) {
+                for (let i = min, k = 0; i < value.length && i <= max; i++, k++) {
                     data.push(value[i]);
                 }
             });
@@ -257,7 +274,126 @@ export class DataAdapter {
             return this.checkRange(newRange, seriesMap, rely);
         } else {
             const re = getExpandCoverZero(range[0], range[1], this.splits.length);
-            return [re[0],re[re.length - 1]];
+            return [re[0], re[re.length - 1]];
         }
     }
+
+    split(i: number, style: string) {
+        let result: any;
+        if (style.toLowerCase() === 'right') {
+            // 右侧y轴反归一化后生成的对应的数组
+            result = this.myDenormalize(this.ryScaler, this.splits[i]);
+        } else if (style.toLowerCase() === 'left') {
+            // 左侧y轴反归一化后生成的对应的数组
+            result = this.myDenormalize(this.lyScaler, this.splits[i]);
+        } else {
+            result = -1;
+        }
+        // TODO 这里先保证返回的数据取出有效值，如果数据长度很大则需要再修改
+        return Number(strip(result, 14));
+    }
+
+    /**
+     * Scaler.denormalize可能会存在精度丢失问题，为了解决这个问题使用这个方法来做
+     * @param scaler 标尺
+     * @param val 数据
+     * 
+     */
+    myDenormalize(scaler: LinearScaler, val: number): number {
+        const delta = strip(scaler.delta, 14);
+        const minVal = strip(scaler.min, 14);
+        const value = strip(val, 14);
+        if (delta) {
+            return plus(times(delta, value), minVal);
+        } else {
+            return minVal;
+        }
+    }
+
+    //获取左侧y轴的最大值最小值
+    countDataInView() {
+        const min = Math.round(this.xScaler.denormalize(0));
+        const max = Math.round(this.xScaler.denormalize(1));
+        return max - min + 1;
+    }
+
+    // 获取整体归一化值
+    getNomalizedY(): number[] {
+        let res: number[] = [];
+        this.lSeriesMap.forEach(arr => {
+            if (res.length === arr.length) {
+                arr.forEach((v, i) => {
+                    res[i] += v;
+                })
+            } else {
+                res = [...arr];
+            }
+        });
+        const range = getRange(res);
+        const scaler = new LinearScaler(range[0], range[1]);
+        return res.map(v => scaler.normalize(v));
+    }
+
+    getStackRange(rely: 'left' | 'right') {
+        const yRangeKeys = (rely === 'left' ? this.option.lyRangeKeys : this.option.ryRangeKeys);
+        const ySeriesMap = this.lSeriesMap;
+        const min = Math.round(this.xScaler.denormalize(0));
+        const max = Math.round(this.xScaler.denormalize(1));
+        const dataListPlus = [];
+        const dataListMinus = [];
+        ySeriesMap.forEach((value, key) => {
+            const index = this.getyRangeIndex(key, yRangeKeys);
+            if (!this.visible.has(key) || index === -1) {
+                return;
+            }
+            for (let i = min, k = 0; i < value.length && i <= max; i++, k++) {
+                const nowNumber = Number(value[i]);
+                if (!isNaN(value[i]) && nowNumber >= 0) {
+                    dataListPlus[k] ? (dataListPlus[k] += nowNumber) : (dataListPlus[k] = nowNumber);
+                }
+                if (!isNaN(value[i]) && value[i] < 0) {
+                    dataListMinus[k] ? (dataListMinus[k] += nowNumber) : (dataListMinus[k] = nowNumber);
+                }
+            }
+        });
+
+        const dataList = [...dataListPlus, ...dataListMinus];
+        if (dataList.length === 0) {
+            return [0, 0];
+        }
+        return getRange(dataList);
+    }
+
+
+    getyRangeIndex(key: any, yRangeKeys: Array<Array<number | string>>) {
+        if (!yRangeKeys) {
+            return -1;
+        }
+
+        return yRangeKeys.findIndex(item => item.findIndex(v => v === key && this.visible.has(key)) !== -1);
+    }
+
+
+    expandRange(range: number[], expandRange: number) {
+        if (isNaN(expandRange) || expandRange === 0) {
+            return range;
+        }
+        const distance = (range[1] - range[0]) * expandRange;
+        const newRange = [range[0] - distance / 2, range[1] + distance / 2];
+        // 扩充范围时，如果原先的范围在0轴的一侧，则不应该让范围扩展到跨越0轴
+        if (range[1] * range[0] > 0 && newRange[0] * newRange[1] < 0) {
+            if (range[0] > 0) {
+                newRange[0] = 0;
+                newRange[1] = range[1] + distance - range[0];
+            }
+
+            if (range[1] < 0) {
+                newRange[1] = 0;
+                newRange[0] = range[0] - distance - range[1];
+            }
+        }
+
+        return newRange;
+    }
+
 }
