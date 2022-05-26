@@ -113,3 +113,6 @@ class ParallelLineView extends ComponentView {
 
 
 }
+
+
+export default ParallelLineView;
