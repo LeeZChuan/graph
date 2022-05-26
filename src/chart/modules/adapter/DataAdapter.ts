@@ -373,7 +373,12 @@ export class DataAdapter {
         return yRangeKeys.findIndex(item => item.findIndex(v => v === key && this.visible.has(key)) !== -1);
     }
 
-
+    /**
+     * 扩展数据范围
+     * @param range 原先的数据范围
+     * @param expandRange 扩展大小
+     * @returns 
+     */
     expandRange(range: number[], expandRange: number) {
         if (isNaN(expandRange) || expandRange === 0) {
             return range;
