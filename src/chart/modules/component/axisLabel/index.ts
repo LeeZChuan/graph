@@ -1,4 +1,7 @@
 import { Component } from "../Component";
+import AxisLabelAction from "./AxisLabelAction";
+import AxisLabelModel, { AxisLabelOption } from "./AxisLabelModel";
+import AxisLabelView from "./AxisLabelView";
 
 
 
