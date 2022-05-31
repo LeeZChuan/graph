@@ -1,17 +1,12 @@
 
 // over
 import { Path, PathStyleProps, Element as ZRElement, ElementProps, Group, RectShape, Rect } from "zrender";
-import BarSeries from "./index";
 import ComponentMobel from "../ComponentModel";
 import ComponentView from "../ComponentView";
 import { BarSeriesOption } from "./BarSeriesModel";
 import { Chart } from "../../lib/Chart";
 import { LayoutPosition } from "../../layout/Layout";
 
-export interface BarSeriesOption {
-
-
-}
 
 export default class BarSeriesView extends ComponentView {
     // 绘制类型stack堆叠图，normal普通柱状图

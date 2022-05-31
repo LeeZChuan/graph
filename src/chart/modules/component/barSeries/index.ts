@@ -1,7 +1,7 @@
 
 // over
 
-import { Component } from "./Component";
+import { Component } from "../Component";
 import BarSeriesModel, { BarSeriesOption } from './BarSeriesModel';
 import BarSeriesView from './BarSeriesView';
 export default class BarSeries extends Component {
@@ -11,7 +11,7 @@ export default class BarSeries extends Component {
         this._model = new BarSeriesModel(option);
         this._model.update();
         this._view = new BarSeriesView(this._model);
-        thius._view.setGroupName(name);
+        this._view.setGroupName(name);
     }
 
     set values(val: any) {
