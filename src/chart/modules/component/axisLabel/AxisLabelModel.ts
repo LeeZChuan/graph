@@ -1,3 +1,6 @@
+//over
+
+
 import { TEXTSTYLE } from "@/modules/static/style";
 import { TextProps } from "zrender";
 import { SCALER } from "../../util/value";

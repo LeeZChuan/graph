@@ -1,4 +1,8 @@
+//over
 import { Component } from "../Component";
+import CrossAxisPointerAction from "./CrossAxisPointerAction";
+import CrossAxisPointerModel, { CrossAxisPointerOption } from "./CrossAxisPointerModel";
+import CrossAxisPointerView from "./CrossAxisPointerView";
 
 
 export default class CrossAxisPointer extends Component {

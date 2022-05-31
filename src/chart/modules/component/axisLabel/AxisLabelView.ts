@@ -1,3 +1,6 @@
+//over
+
+
 import { TEXTSTYLE } from "@/modules/static/style";
 import { Element, ElementProps, Text, TextProps } from "zrender";
 import { merge } from "zrender/lib/core/util";

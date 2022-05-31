@@ -1,9 +1,10 @@
+//over
+
+
 import { Component } from "../Component";
 import AxisLabelAction from "./AxisLabelAction";
 import AxisLabelModel, { AxisLabelOption } from "./AxisLabelModel";
 import AxisLabelView from "./AxisLabelView";
-
-
 
 
 export default class AxisLabel extends Component {
